@@ -6,7 +6,7 @@ PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens 
 > Code will be continuously updated.
 
 <div align="center">
-  <img width="100%" alt="HCT Network Architecture" src="./github/network.png">
+  <img width="100%" alt="HCT Network Architecture" src=".github/network.png">
 </div>
 
 ## Prerequisites
