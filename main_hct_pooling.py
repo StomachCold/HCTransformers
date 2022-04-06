@@ -33,6 +33,8 @@ def get_args_parser():
     parser.add_argument('--arch', default='vit_small', type=str,
         help="""Name of architecture to train. For quick experiments with ViTs,
         we recommend using vit_tiny or vit_small.""")
+    parser.add_argument('--pretrained_weights', default='/home/heyj/dino/checkpoint_kl250/checkpoint0393.pth',
+        type=str, help="Path to pretrained weights.")
     parser.add_argument('--patch_size', default=8, type=int, help="""Size in pixels
         of input square patches - default 16 (for 16x16 patches). Using smaller
         values leads to better performance but requires more memory. Applies only
@@ -146,7 +148,7 @@ def train_dino(args):
 
     # ============ building student and teacher networks ... ============
 
-    freeze_path = '/home/heyj/dino/checkpoint_kl250/checkpoint0393.pth'
+    # freeze_path = '/home/heyj/dino/checkpoint_kl250/checkpoint0393.pth'
     # ============ feature exctraction ... ============
 
     student = vits.__dict__[args.arch](
@@ -155,7 +157,7 @@ def train_dino(args):
         is_student=True
     )
     embed_dim = student.embed_dim
-    utils.load_pretrained_weights(student, freeze_path, 'student', args.arch,
+    utils.load_pretrained_weights(student, args.pretrained_weights, 'student', args.arch,
                                   args.patch_size)
 
     student = utils.MultiCropWrapper_pooling(student, None, 'student', True)
