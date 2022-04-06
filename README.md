@@ -46,7 +46,7 @@ This repository is released under the Apache 2.0 license as found in the [LICENS
 If you find our code or paper useful to your research work, please consider citing our work using the following bibtex:
 ```
 @misc{he2022hct,
-  author    = {He, Yangji and Liang, Weihan and Zhao, Dongyang and Zhou, Hong-Yu and Ge, Weifeng and Yu, Yizhou and Zhang, Wenqiang},
+  author    = {Yangji He, Weihan Liang, Dongyang Zhao, Hong-Yu Zhou, Weifeng Ge, Yizhou Yu, Wenqiang Zhang},
   title     = {Attribute Surrogates Learning and Spectral Tokens Pooling in Transformers for Few-shot Learning},
   publisher = {arXiv},
   year      = {2022},
