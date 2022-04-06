@@ -1,7 +1,7 @@
 # HCTransformers
 
-PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens Pooling in Transformers for Few-shot Learning"**.
-[[arxiv](https://arxiv.org/abs/2203.09064v1)]
+PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens Pooling in Transformers for Few-shot Learning"**.  
+[[`arxiv`](https://arxiv.org/abs/2203.09064v1)]
 
 > Code will be continuously updated.
 
