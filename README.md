@@ -13,7 +13,7 @@ PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens 
 This codebase has been developed with Python version 3.8, [PyTorch](https://pytorch.org/) version 1.9.0, CUDA 11.1 and torchvision 0.10.0. It has been tested on Ubuntu 20.04. 
 
 ## Training
-We provide the training code for mini-ImageNet, tiered-ImageNet and CIFAR-FS, extending the **DINO** repo ([link](https://github.com/facebookresearch/dino)). Download links of datasets could be found in the **DeepEMD** repo ([link](https://github.com/icoz69/DeepEMD)).
+We provide the training code for mini-ImageNet, tiered-ImageNet and CIFAR-FS, extending the **DINO** repo ([link](https://github.com/facebookresearch/dino)). Download links of datasets could be found in the **meta-transfer-learning** repo ([link](https://github.com/yaoyao-liu/meta-transfer-learning#datasets)).
 
 
 ### 1 Pre-train the First Transformer
