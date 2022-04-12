@@ -17,15 +17,15 @@ We provide the training code for mini-ImageNet, tiered-ImageNet and CIFAR-FS, ex
 
 
 ### 1 Pre-train the First Transformer
-To pre-train the first Transformer with attribute surrogates learning from scratch with multiple GPU, run:
+To pre-train the first Transformer with attribute surrogates learning on mini-ImageNet from scratch with multiple GPU, run:
 ```
-python -m torch.distributed.launch --nproc_per_node=8 main_hct_first.py --arch vit_small --data_path /path/to/imagenet/train --output_dir /path/to/saving_dir
+python -m torch.distributed.launch --nproc_per_node=8 main_hct_first.py --arch vit_small --data_path /path/to/mini_imagenet/train --output_dir /path/to/saving_dir
 ```
 
 ### 2 Train the Hierarchically Cascaded Transformers
-To train the Hierarchically Cascaded Transformers with sprectral token pooling, run:
+To train the Hierarchically Cascaded Transformers with sprectral token pooling on mini-ImageNet, run:
 ```
-python -m torch.distributed.launch --nproc_per_node=8 main_hct_pooling.py --arch vit_small --data_path /path/to/imagenet/train --output_dir /path/to/saving_dir --pretrained_weights /path/to/pretrained_weights
+python -m torch.distributed.launch --nproc_per_node=8 main_hct_pooling.py --arch vit_small --data_path /path/to/mini_imagenet/train --output_dir /path/to/saving_dir --pretrained_weights /path/to/pretrained_weights
 ```
 
 ## Evaluation
