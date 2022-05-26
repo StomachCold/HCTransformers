@@ -1,5 +1,7 @@
 # HCTransformers
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/attribute-surrogates-learning-and-spectral/few-shot-learning-on-mini-imagenet-5-way-1)](https://paperswithcode.com/sota/few-shot-learning-on-mini-imagenet-5-way-1?p=attribute-surrogates-learning-and-spectral)
+
 PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens Pooling in Transformers for Few-shot Learning"**.  
 [[`arxiv`](https://arxiv.org/abs/2203.09064v1)]
 
