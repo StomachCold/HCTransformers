@@ -196,8 +196,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', default='-1', type=str, help='Number of epochs of training.')
     parser.add_argument('--save', default=1, type=int)
     parser.add_argument('--isfile', default=-1, type=int)
-    parser.add_argument('--server', default='mini_72_triplet_center3', type=str,
-                        help='mini_72_triplet_center3/mini_99 / mini_72 / tiered_99 / tiered_99 / mini_99_triplet / mini_72_triplet')
+    parser.add_argument('--server', default='mini', type=str,
+                        help='mini / tiered / fs / fc100')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
     args = parser.parse_args()

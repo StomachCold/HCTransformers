@@ -190,7 +190,7 @@ if __name__ == '__main__':
     parser.add_argument('--isfile', default=-1, type=int)
     
     parser.add_argument('--server', default='mini_pooling', type=str,
-                        help='mini_72_triplet_center3/mini_99 / mini_72 / tiered_99 / tiered_99 / mini_99_triplet / mini_72_triplet')
+                        help='mini_pooling / fs_pooling')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
     parser.add_argument('--freeze_path',default='',type=str,
