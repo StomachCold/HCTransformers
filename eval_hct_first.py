@@ -16,19 +16,19 @@ server_dict = {
     'mini':{
         'dataset': 'mini',
         'data_path': '/path/to/mini_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint_mini/'},
+        'ckp_path': '/path/to/checkpoint_mini/'},
     'fs':{
         'dataset': 'fs',
         'data_path': '/path/to/CIFAR-FS/',
-        'pretrained_weights': '/path/to/checkpoint_fs/'},
+        'ckp_path': '/path/to/checkpoint_fs/'},
     'fc100':{
         'dataset': 'fc100',
         'data_path': '/path/to/FC100/',
-        'pretrained_weights': '/path/to/checkpoint_fc100/'},
+        'ckp_path': '/path/to/checkpoint_fc100/'},
     'tiered':{
         'dataset': 'tiered',
         'data_path': '/path/to/tiered_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint_tiered/'},
+        'ckp_path': '/path/to/checkpoint_tiered/'},
 }
 
 
@@ -77,9 +77,11 @@ def eval_linear(args):
     # args.pretrained_weights = args.pretrained_weights[:-4] + str(args.epochs) + args.pretrained_weights[-4:]
 
     print(f"Model {args.arch} built.")
-    print(embed_dim,args.num_labels)
+    print(f"ckp_path: {server['ckp_path']}")
+    
+    args.output_dir = server['ckp_path']
 
-    checkdir = os.listdir(server['pretrained_weights'])
+    checkdir = os.listdir(server['ckp_path'])
     checkdir.sort()
     checkdir = [checkdir[i] for i in range(len(checkdir)) if '.pth' in checkdir[i]]
     for i in range(len(checkdir)):
@@ -90,27 +92,30 @@ def eval_linear(args):
                 checkdir = checkdir[0:1] + checkdir[i:]
             break
 
-    print(checkdir)
-    pretrained_weights = server['pretrained_weights']
-    checkpoint_key = ['teacher','student']
+    print(f"checkpoints: {checkdir}")
+
+    # pretrained_weights = server['pretrained_weights']
+    # checkpoint_key = ['teacher','student']
 
     for i in range(len(checkdir)):
-        print(checkdir[i])
+        print(f"Evaluating pretrained weight in {checkdir[i]}")
         if '.pth' in checkdir[i]:
-            server['pretrained_weights'] = pretrained_weights + checkdir[i]
+            args.pretrained_weights = os.path.join(server['ckp_path'],checkdir[i])
+            # server['pretrained_weights'] = pretrained_weights + checkdir[i]
+            
             if not checkdir[i][-8:-4].isdigit():
-                epoch = int(torch.load(server['pretrained_weights'])['epoch'])
+                epoch = int(torch.load(args.pretrained_weights)['epoch'])
             else:
                 epoch = int(checkdir[i][-8:-4])
 
-            outfile = pretrained_weights+'{}_224_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key)
+            outfile = server['ckp_path']+'{}_224_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key)
             if not os.path.isfile(outfile) or args.isfile == 1:
-                utils.load_pretrained_weights(model, server['pretrained_weights'], args.checkpoint_key, args.arch,
+                utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch,
                                               args.patch_size)
                 if args.save == 1:
                     save_features(model,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, pretrained_weights)
 
-            testCos(args,server,epoch,pretrained_weights)
+            testCos(args,server,epoch,server['ckp_path'])
         if int(args.epochs) == -1:
             return
 
@@ -120,8 +125,8 @@ def save_features(model,dataset,loader, n, avgpool,epochs, pretrained_weights):
     print('outputfile:',outfile)
     # if os.path.isfile(outfile):
     #     return
-    metric_logger = utils.MetricLogger(delimiter="  ")
-    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
+    # metric_logger = utils.MetricLogger(delimiter="  ")
+    # metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     f = h5py.File(outfile, 'w')
     max_count = len(loader) * loader.batch_size
     print(max_count)
@@ -185,13 +190,16 @@ if __name__ == '__main__':
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
 
     parser.add_argument('--num_workers', default=10, type=int, help='Number of data loading workers per GPU.')
-    parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
+    # parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
     parser.add_argument('--output_dir', default=".", help='Path to save logs and checkpoints')
     parser.add_argument('--num_labels', default=1000, type=int, help='Number of labels for linear classifier')
+    
+    # few-shot args
     parser.add_argument('--num_ways', default=5, type=int)
     parser.add_argument('--num_shots', default=1, type=int)
     parser.add_argument('--seed', default=777, type=int)
 
+    # evaluation args
     parser.add_argument('--partition', default='val', type=str)
     parser.add_argument('--epochs', default='-1', type=str, help='Number of epochs of training.')
     parser.add_argument('--save', default=1, type=int)
@@ -200,6 +208,8 @@ if __name__ == '__main__':
                         help='mini / tiered / fs / fc100')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
+    parser.add_argument('--pretrained_weights', default='', type=str, help="Path to pretrained weights to evaluate.")
+    
     args = parser.parse_args()
     args.server
     eval_linear(args)

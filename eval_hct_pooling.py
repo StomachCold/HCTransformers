@@ -14,11 +14,11 @@ server_dict = {
     'mini_pooling':{
         'dataset': 'mini',
         'data_path': '/path/to/mini_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint_pooling/mini/'},
+        'ckp_path': '/path/to/checkpoint_pooling/mini/'},
     'fs_pooling':{
         'dataset': 'fs',
         'data_path': '/path/to/CIFAR-FS/',
-        'pretrained_weights': '/path/to/checkpoint_pooling/fs/'},
+        'ckp_path': '/path/to/checkpoint_pooling/fs/'},
 }
 
 def eval_linear(args):
@@ -43,12 +43,12 @@ def eval_linear(args):
     )
     print(f"Data loaded with {len(dataset_test)} test imgs.")
     # freeze_path = '/path/to/checkpoint_first.pth'
-    freeze_path = args.freeze_path
+    pretrained_weights = args.pretrained_weights
     # ============ building network ... ============
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     model = vits.__dict__[args.arch](patch_size=args.patch_size, num_classes=0)
 
-    utils.load_pretrained_weights(model, freeze_path, 'student', args.arch,
+    utils.load_pretrained_weights(model, pretrained_weights, 'student', args.arch,
                                   args.patch_size)
     embed_dim = model.embed_dim * (args.n_last_blocks + int(args.avgpool_patchtokens))
     model_392 = vit.vit_small(num_patches=392)
@@ -64,7 +64,7 @@ def eval_linear(args):
     print(f"Model {args.arch} built.")
     print(embed_dim,args.num_labels)
 
-    checkdir = os.listdir(server['pretrained_weights'])
+    checkdir = os.listdir(server['ckp_path'])
     checkdir.sort()
     checkdir = [checkdir[i] for i in range(len(checkdir)) if '.pth' in checkdir[i]]
     for i in range(len(checkdir)):
@@ -76,26 +76,26 @@ def eval_linear(args):
             break
 
     print(checkdir)
-    pretrained_weights = server['pretrained_weights']
+    ckp_path = server['ckp_path']
     # checkpoint_key = ['teacher','student']
 
     for i in range(len(checkdir)):
         print(checkdir[i])
         if '.pth' in checkdir[i]:
-            server['pretrained_weights'] = pretrained_weights + checkdir[i]
+            server['ckp_path'] = ckp_path + checkdir[i]
             if not checkdir[i][-8:-4].isdigit():
-                epoch = int(torch.load(server['pretrained_weights'])['epoch'])
+                epoch = int(torch.load(server['ckp_path'])['epoch'])
             else:
                 epoch = int(checkdir[i][-8:-4])
 
-            outfile = pretrained_weights + 'test_224_{}_{}_3.hdf5'.format(epoch,args.checkpoint_key)
+            outfile = ckp_path + 'test_224_{}_{}_3.hdf5'.format(epoch,args.checkpoint_key)
             if not os.path.isfile(outfile) or args.isfile == 1:
-                utils.load_pretrained_weights(model_392, server['pretrained_weights'], args.checkpoint_key+'_392')
-                utils.load_pretrained_weights(model_196, server['pretrained_weights'], args.checkpoint_key+'_196')
+                utils.load_pretrained_weights(model_392, server['ckp_path'], args.checkpoint_key+'_392')
+                utils.load_pretrained_weights(model_196, server['ckp_path'], args.checkpoint_key+'_196')
                 if args.save == 1:
                     save_features(model,model_392,model_196,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, pretrained_weights)
 
-            testCos(args,server,epoch,pretrained_weights,outfile)
+            testCos(args,server,epoch,ckp_path,outfile)
         if int(args.epochs) == -1:
             return
 
@@ -105,8 +105,8 @@ def save_features(model,model_392,model_196,dataset,loader, n, avgpool,epochs, p
     print('outputfile:',outfile)
     # if os.path.isfile(outfile):
     #     return
-    metric_logger = utils.MetricLogger(delimiter="  ")
-    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
+    # metric_logger = utils.MetricLogger(delimiter="  ")
+    # metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     f = h5py.File(outfile, 'w')
     max_count = len(loader) * loader.batch_size
     print(max_count)
@@ -167,34 +167,40 @@ if __name__ == '__main__':
 
     parser.add_argument("--checkpoint_key", default="teacher", type=str, help='Key to use in the checkpoint (example: "teacher")')
 
-    parser.add_argument("--lr", default=0.001, type=float, help="""Learning rate at the beginning of
-        training (highest LR used during training). The learning rate is linearly scaled
-        with the batch size, and specified here for a reference batch size of 256.
-        We recommend tweaking the LR depending on the checkpoint evaluated.""")
+    # parser.add_argument("--lr", default=0.001, type=float, help="""Learning rate at the beginning of
+    #     training (highest LR used during training). The learning rate is linearly scaled
+    #     with the batch size, and specified here for a reference batch size of 256.
+    #     We recommend tweaking the LR depending on the checkpoint evaluated.""")
     parser.add_argument('--batch_size_per_gpu', default=60, type=int, help='Per-GPU batch-size')
     parser.add_argument("--dist_url", default="env://", type=str, help="""url used to set up
         distributed training; see https://pytorch.org/docs/stable/distributed.html""")
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
 
     parser.add_argument('--num_workers', default=10, type=int, help='Number of data loading workers per GPU.')
-    parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
+    # parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
     parser.add_argument('--output_dir', default=".", help='Path to save logs and checkpoints')
     parser.add_argument('--num_labels', default=1000, type=int, help='Number of labels for linear classifier')
+    
+    # few-shot args
     parser.add_argument('--num_ways', default=5, type=int)
     parser.add_argument('--num_shots', default=1, type=int)
+    
+    # evaluation args
     parser.add_argument('--seed', default=99, type=int)
-
     parser.add_argument('--partition', default='val', type=str)
     parser.add_argument('--epochs', default='-1', type=str, help='Number of epochs of training.')
-    parser.add_argument('--save', default=1, type=int)
+    parser.add_argument('--save', default=1, type=int,help="1 - save feature file(necessary for the first evaluation)")
     parser.add_argument('--isfile', default=-1, type=int)
     
     parser.add_argument('--server', default='mini_pooling', type=str,
                         help='mini_pooling / fs_pooling')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
+    
     parser.add_argument('--freeze_path',default='',type=str,
+                        help='path to the checkpoint of hct')
+    parser.add_argument('--pretrained_weights',default='',type=str,
                         help='path to the pretrained weights of the first stage')
+    
     args = parser.parse_args()
-    args.server
     eval_linear(args)
