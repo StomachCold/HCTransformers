@@ -104,7 +104,7 @@ def eval_linear(args):
             # server['pretrained_weights'] = pretrained_weights + checkdir[i]
             
             if not checkdir[i][-8:-4].isdigit():
-                epoch = int(torch.load(args.pretrained_weights)['epoch'])
+                epoch = int(torch.load(args.pretrained_weights)['epoch']) - 1
             else:
                 epoch = int(checkdir[i][-8:-4])
 
