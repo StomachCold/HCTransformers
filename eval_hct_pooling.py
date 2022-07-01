@@ -14,43 +14,12 @@ server_dict = {
     'mini_pooling':{
         'dataset': 'mini',
         'data_path': '/path/to/mini_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint_pooling/'},
+        'pretrained_weights': '/path/to/checkpoint_pooling/mini/'},
+    'fs_pooling':{
+        'dataset': 'fs',
+        'data_path': '/path/to/CIFAR-FS/',
+        'pretrained_weights': '/path/to/checkpoint_pooling/fs/'},
 }
-
-def get_args_parser():
-    parser = argparse.ArgumentParser('Evaluation with linear classification on ImageNet')
-    parser.add_argument('--n_last_blocks', default=1, type=int, help="""Concatenate [CLS] tokens
-            for the `n` last blocks. We use `n=4` when evaluating ViT-Small and `n=1` with ViT-Base.""")
-    parser.add_argument('--avgpool_patchtokens', default=False, type=utils.bool_flag,
-                        help="""Whether ot not to concatenate the global average pooled features to the [CLS] token.
-            We typically set this to False for ViT-Small and to True with ViT-Base.""")
-    parser.add_argument('--arch', default='vit_small', type=str, help='Architecture')
-    parser.add_argument('--patch_size', default=8, type=int, help='Patch resolution of the model.')
-
-    parser.add_argument("--checkpoint_key", default="teacher", type=str,
-                        help='Key to use in the checkpoint (example: "teacher")')
-
-    parser.add_argument('--batch_size_per_gpu', default=5, type=int, help='Per-GPU batch-size')
-    parser.add_argument("--dist_url", default="env://", type=str, help="""url used to set up
-            distributed training; see https://pytorch.org/docs/stable/distributed.html""")
-    parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
-
-    parser.add_argument('--num_workers', default=10, type=int, help='Number of data loading workers per GPU.')
-    parser.add_argument('--val_freq', default=1, type=int, help="Epoch frequency for validation.")
-    parser.add_argument('--output_dir', default=".", help='Path to save logs and checkpoints')
-    parser.add_argument('--num_labels', default=1000, type=int, help='Number of labels for linear classifier')
-    parser.add_argument('--num_ways', default=5, type=int)
-    parser.add_argument('--num_shots', default=1, type=int)
-    parser.add_argument('--seed', default=777, type=int)
-    parser.add_argument('--partition', default='test', type=str)
-
-    parser.add_argument('--epochs', default='-1', type=str, help='Number of epochs of training.')
-    parser.add_argument('--save', default=1, type=int)
-    parser.add_argument('--server', default='mini_pooling', type=str,
-                        help='mini_pooling')
-    parser.add_argument('--both', default=1, type=int)
-    args = parser.parse_args()
-    eval_linear(args)
 
 def eval_linear(args):
     server = server_dict[args.server]
@@ -73,7 +42,8 @@ def eval_linear(args):
         pin_memory=True,
     )
     print(f"Data loaded with {len(dataset_test)} test imgs.")
-    freeze_path = '/path/to/checkpoint_first.pth'
+    # freeze_path = '/path/to/checkpoint_first.pth'
+    freeze_path = args.freeze_path
     # ============ building network ... ============
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     model = vits.__dict__[args.arch](patch_size=args.patch_size, num_classes=0)
@@ -223,6 +193,8 @@ if __name__ == '__main__':
                         help='mini_72_triplet_center3/mini_99 / mini_72 / tiered_99 / tiered_99 / mini_99_triplet / mini_72_triplet')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
+    parser.add_argument('--freeze_path',default='',type=str,
+                        help='path to the pretrained weights of the first stage')
     args = parser.parse_args()
     args.server
     eval_linear(args)

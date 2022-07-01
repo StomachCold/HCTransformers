@@ -13,26 +13,22 @@ import utils
 import vision_transformer_attn as vits
 
 server_dict = {
-    'dino':{
+    'mini':{
         'dataset': 'mini',
         'data_path': '/path/to/mini_imagenet/',
         'pretrained_weights': '/path/to/checkpoint_mini/'},
-    'FS_72_center_kl1':{
-        'dataset': 'FS',
+    'fs':{
+        'dataset': 'fs',
         'data_path': '/path/to/CIFAR-FS/',
-        'pretrained_weights': '/path/to/checkpoint_CIFAR/'},
-    'FC100_72_center_kl1':{
-        'dataset': 'FC100',
+        'pretrained_weights': '/path/to/checkpoint_fs/'},
+    'fc100':{
+        'dataset': 'fc100',
         'data_path': '/path/to/FC100/',
-        'pretrained_weights': '/path/to/checkpoint_FC100/'},
-    'mini_72_triplet_center3':{
-        'dataset': 'mini',
-        'data_path': '/path/to/mini_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint/'},
-    'mini_72_triplet_attn_center2':{
-        'dataset': 'mini',
-        'data_path': '/path/to/mini_imagenet/',
-        'pretrained_weights': '/path/to/checkpoint_triplet_attn_center2/'}
+        'pretrained_weights': '/path/to/checkpoint_fc100/'},
+    'tiered':{
+        'dataset': 'tiered',
+        'data_path': '/path/to/tiered_imagenet/',
+        'pretrained_weights': '/path/to/checkpoint_tiered/'},
 }
 
 
