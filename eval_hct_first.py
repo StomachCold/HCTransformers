@@ -15,8 +15,8 @@ import vision_transformer_attn as vits
 server_dict = {
     'mini':{
         'dataset': 'mini',
-        'data_path': '/path/to/mini_imagenet/',
-        'ckp_path': '/path/to/checkpoint_mini/'},
+        'data_path': '/path/to/mini_imagenet/',     # Need to modify here
+        'ckp_path': '/path/to/checkpoint_mini/'},   # Need to be passed in commandline args
     'fs':{
         'dataset': 'fs',
         'data_path': '/path/to/CIFAR-FS/',
@@ -113,7 +113,7 @@ def eval_linear(args):
                 utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch,
                                               args.patch_size)
                 if args.save == 1:
-                    save_features(model,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, pretrained_weights)
+                    save_features(model,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, server['ckp_path'])
 
             testCos(args,server,epoch,server['ckp_path'])
         if int(args.epochs) == -1:
@@ -208,8 +208,12 @@ if __name__ == '__main__':
                         help='mini / tiered / fs / fc100')
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
+    parser.add_argument('--ckp_path',default='',type=str,
+                        help='path to the checkpoint of hct')
     parser.add_argument('--pretrained_weights', default='', type=str, help="Path to pretrained weights to evaluate.")
     
     args = parser.parse_args()
-    args.server
+    # setup ckp_path
+    server_dict[args.server]['ckp_path'] = args.ckp_path
+    
     eval_linear(args)

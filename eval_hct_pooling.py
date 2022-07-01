@@ -13,8 +13,8 @@ from utils import token_pooling
 server_dict = {
     'mini_pooling':{
         'dataset': 'mini',
-        'data_path': '/path/to/mini_imagenet/',
-        'ckp_path': '/path/to/checkpoint_pooling/mini/'},
+        'data_path': '/path/to/mini_imagenet/',             # Need to modify here
+        'ckp_path': '/path/to/checkpoint_pooling/mini/'},   # Need to be passed in commandline args
     'fs_pooling':{
         'dataset': 'fs',
         'data_path': '/path/to/CIFAR-FS/',
@@ -43,12 +43,12 @@ def eval_linear(args):
     )
     print(f"Data loaded with {len(dataset_test)} test imgs.")
     # freeze_path = '/path/to/checkpoint_first.pth'
-    pretrained_weights = args.pretrained_weights
+    pretrained_weights_first = args.pretrained_weights
     # ============ building network ... ============
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     model = vits.__dict__[args.arch](patch_size=args.patch_size, num_classes=0)
 
-    utils.load_pretrained_weights(model, pretrained_weights, 'student', args.arch,
+    utils.load_pretrained_weights(model, pretrained_weights_first, 'student', args.arch,
                                   args.patch_size)
     embed_dim = model.embed_dim * (args.n_last_blocks + int(args.avgpool_patchtokens))
     model_392 = vit.vit_small(num_patches=392)
@@ -62,8 +62,10 @@ def eval_linear(args):
     # load weights to evaluate
 
     print(f"Model {args.arch} built.")
-    print(embed_dim,args.num_labels)
+    print(server['ckp_path'])
 
+    args.output_dir = server['ckp_path']
+    
     checkdir = os.listdir(server['ckp_path'])
     checkdir.sort()
     checkdir = [checkdir[i] for i in range(len(checkdir)) if '.pth' in checkdir[i]]
@@ -75,25 +77,26 @@ def eval_linear(args):
                 checkdir = checkdir[0:1] + checkdir[i:]
             break
 
-    print(checkdir)
+    print(f"checkpoints: {checkdir}")
     ckp_path = server['ckp_path']
     # checkpoint_key = ['teacher','student']
 
     for i in range(len(checkdir)):
-        print(checkdir[i])
+        print(f"Evaluating pretrained weight in {checkdir[i]}")
         if '.pth' in checkdir[i]:
-            server['ckp_path'] = ckp_path + checkdir[i]
+            args.pretrained_weights = os.path.join(ckp_path,checkdir[i])
+            
             if not checkdir[i][-8:-4].isdigit():
-                epoch = int(torch.load(server['ckp_path'])['epoch'])
+                epoch = int(torch.load(args.pretrained_weights)['epoch'])
             else:
                 epoch = int(checkdir[i][-8:-4])
 
             outfile = ckp_path + 'test_224_{}_{}_3.hdf5'.format(epoch,args.checkpoint_key)
             if not os.path.isfile(outfile) or args.isfile == 1:
-                utils.load_pretrained_weights(model_392, server['ckp_path'], args.checkpoint_key+'_392')
-                utils.load_pretrained_weights(model_196, server['ckp_path'], args.checkpoint_key+'_196')
+                utils.load_pretrained_weights(model_392, args.pretrained_weights, args.checkpoint_key+'_392')
+                utils.load_pretrained_weights(model_196, args.pretrained_weights, args.checkpoint_key+'_196')
                 if args.save == 1:
-                    save_features(model,model_392,model_196,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, pretrained_weights)
+                    save_features(model,model_392,model_196,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, ckp_path)
 
             testCos(args,server,epoch,ckp_path,outfile)
         if int(args.epochs) == -1:
@@ -197,10 +200,13 @@ if __name__ == '__main__':
     parser.add_argument('--n',default=1)
     parser.add_argument('--both',default=1, type=int)
     
-    parser.add_argument('--freeze_path',default='',type=str,
+    parser.add_argument('--ckp_path',default='',type=str,
                         help='path to the checkpoint of hct')
     parser.add_argument('--pretrained_weights',default='',type=str,
                         help='path to the pretrained weights of the first stage')
     
     args = parser.parse_args()
+    # setup ckp_path
+    server_dict[args.server]['ckp_path'] = args.ckp_path
+    
     eval_linear(args)
