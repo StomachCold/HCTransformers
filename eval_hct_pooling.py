@@ -34,7 +34,7 @@ def eval_linear(args):
         pth_transforms.ToTensor(),
         pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     ])
-    dataset_test = datasets.ImageFolder(os.path.join(server['data_path'], "test"), transform=val_transform)
+    dataset_test = datasets.ImageFolder(os.path.join(server['data_path'], args.partition), transform=val_transform)
     test_loader = torch.utils.data.DataLoader(
         dataset_test,
         batch_size=args.batch_size_per_gpu,
@@ -91,20 +91,20 @@ def eval_linear(args):
             else:
                 epoch = int(checkdir[i][-8:-4])
 
-            outfile = ckp_path + 'test_224_{}_{}_3.hdf5'.format(epoch,args.checkpoint_key)
+            outfile = ckp_path + '{}_224_{}_{}_3.hdf5'.format(args.partition,epoch,args.checkpoint_key)
             if not os.path.isfile(outfile) or args.isfile == 1:
                 utils.load_pretrained_weights(model_392, args.pretrained_weights, args.checkpoint_key+'_392')
                 utils.load_pretrained_weights(model_196, args.pretrained_weights, args.checkpoint_key+'_196')
                 if args.save == 1:
-                    save_features(model,model_392,model_196,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, ckp_path)
+                    save_features(model,model_392,model_196,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, ckp_path, outfile)
 
             testCos(args,server,epoch,ckp_path,outfile)
         if int(args.epochs) == -1:
             return
 
 
-def save_features(model,model_392,model_196,dataset,loader, n, avgpool,epochs, pretrained_weights):
-    outfile = pretrained_weights+'test_224_{}_{}_3.hdf5'.format(epochs, args.checkpoint_key)
+def save_features(model,model_392,model_196,dataset,loader, n, avgpool,epochs, pretrained_weights, outfile):
+    # outfile = pretrained_weights+'test_224_{}_{}_3.hdf5'.format(epochs, args.checkpoint_key)
     print('outputfile:',outfile)
     # if os.path.isfile(outfile):
     #     return

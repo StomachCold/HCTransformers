@@ -113,15 +113,15 @@ def eval_linear(args):
                 utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch,
                                               args.patch_size)
                 if args.save == 1:
-                    save_features(model,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, server['ckp_path'])
+                    save_features(model,server['dataset'], test_loader, 1, args.avgpool_patchtokens, epoch, server['ckp_path'],outfile)
 
             testCos(args,server,epoch,server['ckp_path'])
         if int(args.epochs) == -1:
             return
 
 
-def save_features(model,dataset,loader, n, avgpool,epochs, pretrained_weights):
-    outfile = pretrained_weights+'{}_224_{}_{}.hdf5'.format(args.partition,epochs, args.checkpoint_key)
+def save_features(model,dataset,loader, n, avgpool,epochs, pretrained_weights,outfile):
+    # outfile = pretrained_weights+'{}_224_{}_{}.hdf5'.format(args.partition,epochs, args.checkpoint_key)
     print('outputfile:',outfile)
     # if os.path.isfile(outfile):
     #     return
