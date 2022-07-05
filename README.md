@@ -63,7 +63,7 @@ Pretrained weights for the **cascaded-trained models** on mini-ImageNet and CIFA
     <td>74.74%</td>
     <td>89.19%</td>
     <td rowspan="4">
-        <a href="https://cowtransfer.com/s/6bd94675bca24c">checkpoints_pooling</a>
+        <a href="https://cowtransfer.com/s/a2c521e983be47">checkpoints_pooling</a>
     </td>
   </tr>
   <tr>
