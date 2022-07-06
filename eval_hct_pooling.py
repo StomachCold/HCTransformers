@@ -87,7 +87,7 @@ def eval_linear(args):
             args.pretrained_weights = os.path.join(ckp_path,checkdir[i])
             
             if not checkdir[i][-8:-4].isdigit():
-                epoch = int(torch.load(args.pretrained_weights)['epoch'])
+                epoch = int(torch.load(args.pretrained_weights)['epoch']) - 1
             else:
                 epoch = int(checkdir[i][-8:-4])
 
