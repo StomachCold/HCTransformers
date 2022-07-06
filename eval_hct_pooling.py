@@ -91,7 +91,7 @@ def eval_linear(args):
             else:
                 epoch = int(checkdir[i][-8:-4])
 
-            outfile = ckp_path + '{}_224_{}_{}_3.hdf5'.format(args.partition,epoch,args.checkpoint_key)
+            outfile = os.path.join(ckp_path,'{}_224_{}_{}_3.hdf5'.format(args.partition,epoch,args.checkpoint_key))
             if not os.path.isfile(outfile) or args.isfile == 1:
                 utils.load_pretrained_weights(model_392, args.pretrained_weights, args.checkpoint_key+'_392')
                 utils.load_pretrained_weights(model_196, args.pretrained_weights, args.checkpoint_key+'_196')

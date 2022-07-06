@@ -63,7 +63,7 @@ def testCos(args,server,epoch,pretrained_weights,file=None):
     # for each iteration
     iter_num = 10000
     print(iter_num)
-    file_path = pretrained_weights + '{}_224_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key)
+    file_path = os.path.join(pretrained_weights,'{}_224_{}_{}.hdf5'.format(args.partition,epoch, args.checkpoint_key))
     if file is not None:
         file_path = file
 
@@ -89,7 +89,7 @@ def testCos(args,server,epoch,pretrained_weights,file=None):
     log_info += '\n%d Test Acc at %d= %4.2f%% +- %4.2f%% %s\n' % (
         epoch,iter_num, acc_mean1, 1.96 * acc_std1 / np.sqrt(iter_num), args.checkpoint_key)
     # basz step method dataset partition
-    with open(pretrained_weights+'/{}_log_{}_{}.txt'.format(args.partition,server['dataset'],args.checkpoint_key), 'a+') as f:
+    with open(os.path.join(pretrained_weights,'{}_log_{}_{}.txt'.format(args.partition,server['dataset'],args.checkpoint_key)), 'a+') as f:
         f.write(log_info)
 
 
