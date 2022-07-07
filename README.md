@@ -11,6 +11,17 @@ PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens 
   <img width="100%" alt="HCT Network Architecture" src=".github/network.png">
 </div>
 
+## Updates
+
+***07/07/2022***
+
+1. Datasets description and **guideline** are updated.
+2. **Features** extracted by the pretrained models on our 𝒎𝒊𝒏𝒊ImageNet is also provided here.
+
+***07/01/2022***
+
+Provided **pretrained weights** download links and *evaluation* command line.
+
 ## Prerequisites
 This codebase has been developed with Python version 3.8, [PyTorch](https://pytorch.org/) version 1.9.0, CUDA 11.1 and torchvision 0.10.0. It has been tested on Ubuntu 20.04. 
 
@@ -22,7 +33,7 @@ Pretrained weights on 𝒎𝒊𝒏𝒊ImageNet, 𝒕𝒊𝒆𝒓𝒆𝒅ImageNet
     <th>dataset</th>
     <th>1-shot</th>
     <th>5-shot</th>
-    <th colspan="6">download</th>
+    <th colspan="2">download</th>
   </tr>
   <tr>
     <td>𝒎𝒊𝒏𝒊ImageNet</td>
@@ -31,21 +42,27 @@ Pretrained weights on 𝒎𝒊𝒏𝒊ImageNet, 𝒕𝒊𝒆𝒓𝒆𝒅ImageNet
     <td rowspan="4">
         <a href="https://cowtransfer.com/s/255a1df5901143">checkpoints_first</a>
     </td>
+    <td>
+        <a href="https://cowtransfer.com/s/8336d5b594b54f">features_mini</a>
+    </td>
   </tr>
   <tr>
     <td>𝒕𝒊𝒆𝒓𝒆𝒅ImageNet</td>
     <td>79.67%</td>
     <td>91.72%</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>FC100</td>
     <td>48.27%</td>
     <td>66.42%</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>CIFAR-FS</td>
     <td>73.13%</td>
     <td>86.36%</td>
+    <td>-</td>
   </tr>
 </table>
 
@@ -56,7 +73,7 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
     <th>dataset</th>
     <th>1-shot</th>
     <th>5-shot</th>
-    <th colspan="6">download</th>
+    <th colspan="2">download</th>
   </tr>
   <tr>
     <td>𝒎𝒊𝒏𝒊ImageNet</td>
@@ -65,11 +82,15 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
     <td rowspan="4">
         <a href="https://cowtransfer.com/s/6bd94675bca24c">checkpoints_pooling</a>
     </td>
+    <td>
+        <a href="https://cowtransfer.com/s/8336d5b594b54f">features_mini</a>
+    </td>
   </tr>
   <tr>
     <td>CIFAR-FS</td>
     <td>78.89%</td>
-    <td>90.50%</td>
+    <td>90.50%</td>>
+    <td>-</td>
   </tr>
 </table>
 
