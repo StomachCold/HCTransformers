@@ -89,7 +89,7 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
   <tr>
     <td>CIFAR-FS</td>
     <td>78.89%</td>
-    <td>90.50%</td>>
+    <td>90.50%</td>
     <td>-</td>
   </tr>
 </table>
