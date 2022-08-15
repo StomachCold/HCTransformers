@@ -80,7 +80,7 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
     <td>74.74%</td>
     <td>89.19%</td>
     <td rowspan="4">
-        <a href="https://cowtransfer.com/s/6bd94675bca24c">checkpoints_pooling</a>
+        <a href="https://cowtransfer.com/s/ad48977967c64d">checkpoints_pooling</a>
     </td>
     <td>
         <a href="https://cowtransfer.com/s/8336d5b594b54f">features_mini</a>
