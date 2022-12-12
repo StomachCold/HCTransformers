@@ -488,12 +488,12 @@ def train_one_epoch(student, teacher,student_392,teacher_392,student_196,teacher
 class DINOLoss(nn.Module):
     def __init__(self, out_dim, ncrops, warmup_teacher_temp, teacher_temp,
                  warmup_teacher_temp_epochs, nepochs, student_temp=0.1,
-                 surrogate_momentum=0.9):
+                 center_momentum=0.9):
         super().__init__()
         self.student_temp = student_temp
-        self.surrogate_momentum = surrogate_momentum
+        self.center_momentum = center_momentum
         self.ncrops = ncrops
-        self.register_buffer("surrogate", torch.zeros(1, out_dim))
+        self.register_buffer("center", torch.zeros(1, out_dim))
         # we apply a warm up for the teacher temperature because
         # a too high temperature makes the training instable at the beginning
         self.teacher_temp_schedule = np.concatenate((
@@ -509,9 +509,9 @@ class DINOLoss(nn.Module):
         student_out = student_output / self.student_temp
         student_out = student_out.chunk(self.ncrops)
 
-        # teacher surrogateing and sharpening
+        # teacher centering and sharpening
         temp = self.teacher_temp_schedule[epoch]
-        teacher_out = F.softmax((teacher_output - self.surrogate) / temp, dim=-1)
+        teacher_out = F.softmax((teacher_output - self.center) / temp, dim=-1)
         teacher_out = teacher_out.detach().chunk(2)
 
         total_loss = 0
@@ -525,20 +525,20 @@ class DINOLoss(nn.Module):
                 total_loss += loss.mean()
                 n_loss_terms += 1
         total_loss /= n_loss_terms
-        self.update_surrogate(teacher_output)
+        self.update_center(teacher_output)
         return total_loss
 
     @torch.no_grad()
-    def update_surrogate(self, teacher_output):
+    def update_center(self, teacher_output):
         """
-        Update surrogate used for teacher output.
+        Update center used for teacher output.
         """
-        batch_surrogate = torch.sum(teacher_output, dim=0, keepdim=True)
-        dist.all_reduce(batch_surrogate)
-        batch_surrogate = batch_surrogate / (len(teacher_output) * dist.get_world_size())
+        batch_center = torch.sum(teacher_output, dim=0, keepdim=True)
+        dist.all_reduce(batch_center)
+        batch_center = batch_center / (len(teacher_output) * dist.get_world_size())
 
         # ema update
-        self.surrogate = self.surrogate * self.surrogate_momentum + batch_surrogate * (1 - self.surrogate_momentum)
+        self.center = self.center * self.center_momentum + batch_center * (1 - self.center_momentum)
 
 
 class SurrogateLoss(nn.Module):
@@ -549,7 +549,7 @@ class SurrogateLoss(nn.Module):
         num_classes (int): number of classes.
         feat_dim (int): feature dimension.
     """
-    def __init__(self, ncrops, num_classes=64, feat_dim=8192, use_gpu=True,is_kl=False):
+    def __init__(self, ncrops, num_classes=64, feat_dim=8192, use_gpu=True,is_kl=False,surrogate_momentum=0.999999):
         super(SurrogateLoss, self).__init__()
         self.num_classes = num_classes
         self.is_kl=is_kl
@@ -560,6 +560,8 @@ class SurrogateLoss(nn.Module):
             self.surrogates = nn.Parameter(torch.randn(self.num_classes, self.feat_dim).cuda())
         else:
             self.surrogates = nn.Parameter(torch.randn(self.num_classes, self.feat_dim))
+        self.surrogate_momentum = surrogate_momentum
+
     def forward(self, x, labels):
         """
         Args:
@@ -576,6 +578,7 @@ class SurrogateLoss(nn.Module):
                 kl = F.kl_div(F.log_softmax(x[i],dim=-1),F.softmax(surrogate,dim=-1),reduction='sum')
                 loss = torch.clamp(kl, min=1e-5, max=1e+5).mean(dim=-1)
                 total_loss += loss
+                self.update_surrogate(labels,x[i])
             return total_loss/2
         else:
             for i in range(2):
@@ -583,8 +586,16 @@ class SurrogateLoss(nn.Module):
                 dist = (x[i] - surrogate).pow(2).sum(dim=-1)
                 loss = torch.clamp(dist, min=1e-5, max=1e+5).mean(dim=-1)
                 total_loss += loss
+                self.update_surrogate(labels,x[i])
             return total_loss/1000/2
 
+    @torch.no_grad()
+    def update_surrogate(self, labels, x):
+        """
+        Update surrogate via ema.
+        """
+        # ema update
+        self.surrogates[labels] = self.surrogates[labels] * self.surrogate_momentum + x * (1 - self.surrogate_momentum)
 
 
 class DataAugmentationDINO(object):

@@ -91,7 +91,8 @@ def eval_linear(args):
             else:
                 checkdir = checkdir[0:1] + checkdir[i:]
             break
-
+    
+    checkdir = ['checkpoint0393.pth']
     print(f"checkpoints: {checkdir}")
 
     # pretrained_weights = server['pretrained_weights']
