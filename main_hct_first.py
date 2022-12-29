@@ -388,12 +388,16 @@ def train_one_epoch(student, teacher, teacher_without_ddp, dino_loss,surrogate_l
         metric_logger.update(wd=optimizer.param_groups[0]["weight_decay"])
         # metric_logger.update(loss_rate=loss_schedule[it])
 
-         # Save tb record every
+        # Save tb record every
         if (it+1) % 25 == 0 or (it+1) % len(data_loader) == 0:
+            log_stats_ = dict(
+                loss=loss.item(),dinoloss=dinoloss.item(),
+                clsloss=surrogateloss1.item()
+            )
+            if epoch <= 250:
+                log_stats_.update(patchloss=surrogateloss2.item())
             utils.save_tb_iter(
-                dict(
-                    loss=loss.item(),dinoloss=dinoloss.item(),
-                    clsloss=surrogateloss1.item(),patchloss=surrogateloss2.item()),
+                log_stats_,
                 it,
             )
 
