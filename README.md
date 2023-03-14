@@ -95,13 +95,12 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
 </table>
 
 ## Datasets
-~~Download links of datasets could be found in the **meta-transfer-learning** repo ([link](https://github.com/yaoyao-liu/meta-transfer-learning#datasets)).~~ We found that the image resolution in the off-the-shelf 𝒎𝒊𝒏𝒊ImageNet and 𝒕𝒊𝒆𝒓𝒆𝒅ImageNet is 84 × 84, which is different from what we used (480 × 480). We apologize and regret for any inconvenience caused by our negligence.
 
 ### 𝒎𝒊𝒏𝒊ImageNet
 
 > The 𝑚𝑖𝑛𝑖ImageNet dataset was proposed by [Vinyals et al.](http://papers.nips.cc/paper/6385-matching-networks-for-one-shot-learning.pdf) for few-shot learning evaluation. Its complexity is high due to the use of ImageNet images but requires fewer resources and infrastructure than running on the full [ImageNet dataset](https://arxiv.org/pdf/1409.0575.pdf). In total, there are 100 classes with 600 samples of color images per class. These 100 classes are divided into 64, 16, and 20 classes respectively for sampling tasks for meta-training, meta-validation, and meta-test. To generate this dataset from ImageNet, you may use the repository [𝑚𝑖𝑛𝑖ImageNet tools](https://github.com/y2l/mini-imagenet-tools).
 
-Note that in our implemenation images are resized to 480 × 480 because the data augmentation we used require the image resolution to be greater than 224 to avoid distortions. Therefore, when generating 𝒎𝒊𝒏𝒊ImageNet, you should set ```--image_resize 0``` to keep the original size or ```--image_resize 480``` as what we did.
+**Note that in our implemenation images are resized to 480 × 480** because the data augmentation we used require the image resolution to be greater than 224 to avoid distortions. Therefore, when generating 𝒎𝒊𝒏𝒊ImageNet, you should set ```--image_resize 0``` to keep the original size or ```--image_resize 480``` as what we did.
 
 ### 𝒕𝒊𝒆𝒓𝒆𝒅ImageNet
 > The [𝑡𝑖𝑒𝑟𝑒𝑑ImageNet](https://arxiv.org/pdf/1803.00676.pdf) dataset is a larger subset of ILSVRC-12 with 608 classes (779,165 images) grouped into 34 higher-level nodes in the ImageNet human-curated hierarchy. To generate this dataset from ImageNet, you may use the repository 𝑡𝑖𝑒𝑟𝑒𝑑ImageNet dataset: [𝑡𝑖𝑒𝑟𝑒𝑑ImageNet tools](https://github.com/y2l/tiered-imagenet-tools). 
@@ -142,11 +141,11 @@ This repository is released under the Apache 2.0 license as found in the [LICENS
 ## Citation
 If you find our code or paper useful to your research work, please consider citing our work using the following bibtex:
 ```
-@misc{he2022hct,
-  author    = {Yangji He, Weihan Liang, Dongyang Zhao, Hong-Yu Zhou, Weifeng Ge, Yizhou Yu, Wenqiang Zhang},
-  title     = {Attribute Surrogates Learning and Spectral Tokens Pooling in Transformers for Few-shot Learning},
-  publisher = {arXiv},
-  year      = {2022},
-  copyright = {arXiv.org perpetual, non-exclusive license}
+@inproceedings{he2022attribute,
+  title={Attribute surrogates learning and spectral tokens pooling in transformers for few-shot learning},
+  author={He, Yangji and Liang, Weihan and Zhao, Dongyang and Zhou, Hong-Yu and Ge, Weifeng and Yu, Yizhou and Zhang, Wenqiang},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={9119--9129},
+  year={2022}
 }
 ```
