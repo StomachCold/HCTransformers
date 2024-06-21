@@ -13,6 +13,10 @@ PyTorch implementation for **"Attribute Surrogates Learning and Spectral Tokens 
 
 ## Updates
 
+***06/21/2024***
+
+Update share links for **pretrained weights** and **extracted features**.
+
 ***07/07/2022***
 
 1. Datasets description and **guideline** are updated.
