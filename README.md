@@ -40,10 +40,10 @@ Pretrained weights on 𝒎𝒊𝒏𝒊ImageNet, 𝒕𝒊𝒆𝒓𝒆𝒅ImageNet
     <td>71.16%</td>
     <td>84.60%</td>
     <td rowspan="4">
-        <a href="https://cowtransfer.com/s/255a1df5901143">checkpoints_first</a>
+        <a href="https://www.ilanzou.com/s/5OPHc0S">checkpoints_first</a>
     </td>
     <td>
-        <a href="https://cowtransfer.com/s/8336d5b594b54f">features_mini</a>
+        <a href="https://www.ilanzou.com/s/ZUzHCPC">features_mini</a>
     </td>
   </tr>
   <tr>
@@ -80,10 +80,10 @@ Pretrained weights for the **cascaded-trained models** on 𝒎𝒊𝒏𝒊ImageN
     <td>74.74%</td>
     <td>89.19%</td>
     <td rowspan="4">
-        <a href="https://cowtransfer.com/s/ad48977967c64d">checkpoints_pooling</a>
+        <a href="https://www.ilanzou.com/s/TfVHcz4">checkpoints_pooling</a>
     </td>
     <td>
-        <a href="https://cowtransfer.com/s/8336d5b594b54f">features_mini</a>
+        <a href="https://www.ilanzou.com/s/ZUzHCPC">features_mini</a>
     </td>
   </tr>
   <tr>
